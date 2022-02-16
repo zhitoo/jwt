@@ -4,7 +4,6 @@ namespace Hshafiei374\Jwt;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 
 class JwtToken extends Model
 {
