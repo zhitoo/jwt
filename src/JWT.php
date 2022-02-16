@@ -3,6 +3,7 @@
 namespace Hshafiei374\Jwt;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -17,7 +18,7 @@ class JWT
     public static $JwtTokenModel = JwtToken::class;
 
 
-    protected function base64UrlEncode($text)
+    protected function base64UrlEncode(string $text)
     {
         return str_replace(
             ['+', '/', '='],
@@ -86,7 +87,7 @@ class JWT
         return $this->getTokenable($jwt);
     }
 
-    public function createToken(Request $request, $tokenable): string
+    public function createToken(Request $request,Model $tokenable): string
     {
         $secret = config('jwt.secret');
         // Create the token header
@@ -120,7 +121,7 @@ class JWT
         return $jwt;
     }
 
-    private function getTokenPayLoadInfo($jwt)
+    private function getTokenPayLoadInfo(string $jwt)
     {
         $parts = $this->getTokenParts($jwt);
         return isset($parts['payload']) ? json_decode($parts['payload']) : null;
@@ -143,7 +144,7 @@ class JWT
         ];
     }
 
-    private function getTokenable($jwt)
+    private function getTokenable(string $jwt)
     {
         $payload = $this->getTokenPayLoadInfo($jwt);
         try {

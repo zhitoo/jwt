@@ -52,24 +52,24 @@ class JwtToken extends Model
      * @param string $token
      * @return static|null
      */
-    public static function findToken($token)
+    public static function findToken(string $token)
     {
         return static::where('token', hash('sha256', $token))->first();
     }
 
-    public static function updateLastUsedAt($token)
+    public static function updateLastUsedAt(string $token)
     {
         $token = static::findToken($token);
         $token->last_used_at = Carbon::now();
         return $token->save();
     }
 
-    public static function isTokenValid($token)
+    public static function isTokenValid(string $token)
     {
         return static::findToken($token)->is_valid;
     }
 
-    public static function blockToken($token)
+    public static function blockToken(string $token)
     {
         $token = static::findToken($token);
         $token->is_valid = false;
