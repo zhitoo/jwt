@@ -7,6 +7,14 @@ this package add a new driver for authorization api based on JWT
     php artisan migrate
     php artisan jwt:secret
  ```
+go to User model
+```
+use Hshafiei374\Jwt\HasApiTokens;
+.
+.
+.
+use HasApiTokens
+```
 
 put auth:jwt to your route middleware like below
 ```
