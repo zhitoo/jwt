@@ -1,0 +1,24 @@
+{
+    "name": "hshafiei374/jwt",
+    "description": "Laravel jwt package",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Hshafiei374\\Jwt\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Hossein Shafiei",
+            "email": "hshafiei374@gmail.com"
+        }
+    ],
+    "require": {},
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Hshafiei374\\Jwt\\JWTServiceProvider"
+            ]
+        }
+    }
+}
