@@ -21,6 +21,7 @@
         "illuminate/http": "^6.9|^7.0|^8.0|^9.0",
         "illuminate/log": "^6.9|^7.0|^8.0|^9.0",
         "illuminate/auth": "^6.9|^7.0|^8.0|^9.0",
+        "illuminate/console": "^6.9|^7.0|^8.0|^9.0",
         "nesbot/carbon": "^2.53.1"
     },
     "extra": {

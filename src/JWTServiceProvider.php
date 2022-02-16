@@ -40,6 +40,9 @@ class JWTServiceProvider extends ServiceProvider
     public function boot()
     {
         if (app()->runningInConsole()) {
+            $this->commands([
+                CreateSecretKeyCommand::class,
+            ]);
             $this->publishes([
                 __DIR__ . '/../migrations' => database_path('migrations'),
             ], 'jwt-migrations');

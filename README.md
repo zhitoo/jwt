@@ -2,8 +2,13 @@
 this package add a new driver for authorization api based on JWT 
 ### how can use it?
 ### after install this package:
- - ``` php artisan vendor:publish Hshafiei374\Jwt\JWTServiceProvider ```
- - put auth:jwt to your route middleware like below
+``` 
+    php artisan vendor:publish Hshafiei374\Jwt\JWTServiceProvider
+    php artisan migrate
+    php artisan jwt:secret
+ ```
+
+put auth:jwt to your route middleware like below
 ```
 Route::middleware('auth:jwt')->get('/user', function (Request $request) {
     return $request->user();
