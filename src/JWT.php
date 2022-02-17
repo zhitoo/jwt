@@ -17,16 +17,19 @@ class JWT
     public static $JwtTokenModel = JwtToken::class;
 
     private static $jwt;
+    private $secret;
+    private $expiration;
 
-    private function __construct()
+    private function __construct(int $expiration, string $secret)
     {
-        //
+        $this->expiration = $expiration * 60;//change minutes to seconds
+        $this->secret = $secret;
     }
 
-    public static function getInstance()
+    public static function getInstance(int $expiration, string $secret)
     {
         if (!isset(static::$jwt)) {
-            static::$jwt = new static();
+            static::$jwt = new static($expiration, $secret);
         }
         return static::$jwt;
     }
@@ -57,7 +60,7 @@ class JWT
             }
         }
         if (empty($jwt)) return null;
-        $secret = config('jwt.secret');
+        $secret = $this->secret;
         // split the token
         $tokenParts = $this->getTokenParts($jwt);
         if (count($tokenParts) < 3) {
@@ -103,7 +106,7 @@ class JWT
 
     public function createToken(Request $request, Model $tokenable): string
     {
-        $secret = config('jwt.secret');
+        $secret = $this->secret;
         // Create the token header
         $header = json_encode([
             'typ' => 'JWT',
@@ -115,7 +118,7 @@ class JWT
             'tokenable_id' => $tokenable->id,
             'tokenable_type' => get_class($tokenable),
             'agent' => $request->server('HTTP_USER_AGENT'),
-            'exp' => time() + (config('jwt.expiration') * 60)
+            'exp' => time() + $this->expiration
         ]);
 
         // Encode Header
