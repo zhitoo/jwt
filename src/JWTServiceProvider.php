@@ -26,8 +26,6 @@ class JWTServiceProvider extends ServiceProvider
             $this->mergeConfigFrom(__DIR__ . '/../config/jwt.php', 'jwt');
         }
 
-        app()->singleton('jwt', JWT::class);
-
         Auth::resolved(function ($auth) {
             $auth->extend('jwt', function ($app, $name, array $config) use ($auth) {
                 return tap($this->createGuard($auth, $config), function ($guard) {

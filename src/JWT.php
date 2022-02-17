@@ -9,13 +9,27 @@ use Illuminate\Support\Facades\Log;
 
 class JWT
 {
-
     /**
      * The personal access client model class name.
      *
      * @var string
      */
     public static $JwtTokenModel = JwtToken::class;
+
+    private static $jwt;
+
+    private function __construct()
+    {
+        //
+    }
+
+    public static function getInstance()
+    {
+        if (!isset(static::$jwt)) {
+            static::$jwt = new static();
+        }
+        return static::$jwt;
+    }
 
 
     protected function base64UrlEncode(string $text)
@@ -87,7 +101,7 @@ class JWT
         return $this->getTokenable($jwt);
     }
 
-    public function createToken(Request $request,Model $tokenable): string
+    public function createToken(Request $request, Model $tokenable): string
     {
         $secret = config('jwt.secret');
         // Create the token header
