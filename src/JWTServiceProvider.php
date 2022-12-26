@@ -42,9 +42,6 @@ class JWTServiceProvider extends ServiceProvider
                 CreateSecretKeyCommand::class,
             ]);
             $this->publishes([
-                __DIR__ . '/../migrations' => database_path('migrations'),
-            ], 'jwt-migrations');
-            $this->publishes([
                 __DIR__ . '/../config/jwt.php' => config_path('jwt.php'),
             ], 'jwt-config');
         }

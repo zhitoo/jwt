@@ -9,12 +9,6 @@ use Illuminate\Support\Facades\Log;
 
 class JWT
 {
-    /**
-     * The personal access client model class name.
-     *
-     * @var string
-     */
-    public static $JwtTokenModel = JwtToken::class;
 
     private static $jwt;
     private $secret;
@@ -94,13 +88,7 @@ class JWT
         if ($payLoadObj->agent != $request->server('HTTP_USER_AGENT')) {
             return null;
         }
-        if (!JwtToken::isTokenValid($jwt)) return null;
 
-        try {
-            JwtToken::updateLastUsedAt($jwt);
-        } catch (\Exception $exception) {
-            Log::error($exception);
-        }
         return $this->getTokenable($jwt);
     }
 
@@ -134,8 +122,7 @@ class JWT
         $base64UrlSignature = $this->base64UrlEncode($signature);
 
         // Create JWT
-        $jwt = $base64UrlHeader . "." . $base64UrlPayload . "." . $base64UrlSignature;
-        return $jwt;
+        return $base64UrlHeader . "." . $base64UrlPayload . "." . $base64UrlSignature;
     }
 
     private function getTokenPayLoadInfo(string $jwt)
@@ -164,12 +151,7 @@ class JWT
     private function getTokenable(string $jwt)
     {
         $payload = $this->getTokenPayLoadInfo($jwt);
-        try {
-            return (new $payload->tokenable_type)->find($payload->tokenable_id);
-        } catch (\Exception $exception) {
-            return null;
-        }
-
+        return (new $payload->tokenable_type)->query()->find($payload->tokenable_id);
     }
 
 
