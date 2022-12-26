@@ -3,8 +3,7 @@ this package add a new driver for authorization api based on JWT
 ### how can use it?
 ### after install this package:
 ``` 
-    php artisan vendor:publish Hshafiei374\Jwt\JWTServiceProvider
-    php artisan migrate
+    php artisan vendor:publish Zhitoo\Jwt\JWTServiceProvider
     php artisan jwt:secret
  ```
 go to User model
