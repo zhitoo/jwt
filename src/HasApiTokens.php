@@ -1,6 +1,6 @@
 <?php
 
-namespace Hshafiei374\Jwt;
+namespace Zhitoo\Jwt;
 
 
 trait HasApiTokens
