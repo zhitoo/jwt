@@ -7,8 +7,7 @@ trait HasApiTokens
 {
     public function createToken()
     {
-        $jwt = JWT::getInstance(config('jwt.expiration'), config('jwt.secret'));
-        return $jwt->createToken(request(), $this);
+        return JWT::getInstance()->createToken(request(), $this);
     }
 
 }
