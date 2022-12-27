@@ -8,6 +8,8 @@ return [
     */
     'secret' => env('JWT_SECRET', 'secret_key'),
 
+    'blacklist_path' => storage_path() . '/jwt/blacklist',
+
     /*
     |--------------------------------------------------------------------------
     | Expiration Minutes

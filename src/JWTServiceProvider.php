@@ -50,7 +50,7 @@ class JWTServiceProvider extends ServiceProvider
     protected function createGuard($auth, $config)
     {
         return new RequestGuard(
-            new Guard(config('jwt.expiration'), config('jwt.secret')),
+            new Guard(),
             request(),
             $auth->createUserProvider($config['provider'] ?? null)
         );
