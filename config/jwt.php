@@ -20,5 +20,5 @@ return [
     |
     */
 
-    'expiration' => 1,
+    'expiration' => 24 * 60,
 ];
