@@ -22,7 +22,11 @@ class JWT
     {
         $this->expiration = config('jwt.expiration') * 60;//change minutes to seconds
         $this->secret = config('jwt.secret');
+
         $this->blacklist_path = config('jwt.blacklist_path');
+        $this->blacklist_path = trim($this->blacklist_path, '/\\ ');
+        $this->blacklist_path = DIRECTORY_SEPARATOR . str_replace('/\\', DIRECTORY_SEPARATOR, $this->blacklist_path);
+
         //create path if not exists
         if (!file_exists($this->blacklist_path)) {
             mkdir($this->blacklist_path, 0755, true);
@@ -199,7 +203,7 @@ class JWT
         }
 
         //add random string for create unique file if two person generate jwt at the same time
-        $file = $this->blacklist_path . '/' . $data->exp . '-' . Str::random(4);
+        $file = $this->blacklist_path . DIRECTORY_SEPARATOR . $data->exp . '-' . Str::random(4);
 
         if (!file_exists($file)) {
             touch($file);
