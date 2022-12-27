@@ -6,6 +6,8 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class JWT
 {
@@ -154,5 +156,51 @@ class JWT
         return (new $payload->tokenable_type)->query()->find($payload->tokenable_id);
     }
 
+    /**
+     * @param string $jwt
+     * @return void
+     */
+    public function addTokenToBlackList(string $jwt)
+    {
+        $data = $this->getTokenPayLoadInfo($jwt);
+        $path = storage_path() . '/jwt/blacklist';
+        //create path if not exists
+        if (!file_exists($path)) {
+            mkdir($path, 0755, true);
+        }
 
+        $this->removeExpiredTokenFromBlackList($path);
+
+
+        //if token already expired don't need to add it to black list
+        if ($data->exp <= time()) {
+            return;
+        }
+
+        //add random string for create unique file if two person generate jwt at the same time
+        $file = $path . '/' . $data->exp . '-' . Str::random(4);
+
+        if (!file_exists($file)) {
+            touch($file);
+            file_put_contents($file, $jwt);
+        }
+    }
+
+
+    /**
+     * @param string $path
+     * @return void
+     */
+    private function removeExpiredTokenFromBlackList(string $path)
+    {
+        //remove expired tokens
+        $oldFiles = $files = array_diff(scandir($path), array('.', '..'));
+        foreach ($oldFiles as $oldFile) {
+            $parts = explode('-', $oldFile);
+            $timestamp = $parts[0] ?? 0;
+            if ($timestamp <= time()) {
+                unlink($path . '/' . $oldFile);
+            }
+        }
+    }
 }
