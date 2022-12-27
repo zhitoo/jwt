@@ -211,7 +211,7 @@ class JWT
      * @param Request $request
      * @return mixed|string
      */
-    private function getTokenFromRequest(Request $request)
+    public function getTokenFromRequest(Request $request)
     {
         $token = $request->bearerToken() ?? '';
 
