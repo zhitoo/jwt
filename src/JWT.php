@@ -5,8 +5,6 @@ namespace Zhitoo\Jwt;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class JWT
@@ -15,22 +13,38 @@ class JWT
     private static $jwt;
     private $secret;
     private $expiration;
+    private $blacklist_path;
 
-    private function __construct(int $expiration, string $secret)
+    /**
+     *
+     */
+    private function __construct()
     {
-        $this->expiration = $expiration * 60;//change minutes to seconds
-        $this->secret = $secret;
+        $this->expiration = config('jwt.expiration') * 60;//change minutes to seconds
+        $this->secret = config('jwt.secret');
+        $this->blacklist_path = config('jwt.blacklist_path');
+        //create path if not exists
+        if (!file_exists($this->blacklist_path)) {
+            mkdir($this->blacklist_path, 0755, true);
+        }
     }
 
-    public static function getInstance(int $expiration, string $secret)
+    /**
+     * @return mixed
+     */
+    public static function getInstance()
     {
         if (!isset(static::$jwt)) {
-            static::$jwt = new static($expiration, $secret);
+            static::$jwt = new static();
         }
         return static::$jwt;
     }
 
 
+    /**
+     * @param string $text
+     * @return array|string|string[]
+     */
     protected function base64UrlEncode(string $text)
     {
         return str_replace(
@@ -41,21 +55,19 @@ class JWT
     }
 
 
+    /**
+     * @param Request $request
+     * @return mixed|null
+     */
     public function getTokenableIfTokenValid(Request $request)
     {
-        $jwt = $request->bearerToken() ?? '';
+        $jwt = $this->getTokenFromRequest($request);
 
-        $map = [
-            'token',
-            'api_token'
-        ];
-        if (empty($token)) {
-            foreach ($map as $m) {
-                $token = $request->input($m);
-                if (!empty($token)) break;
-            }
-        }
+
         if (empty($jwt)) return null;
+
+        if ($this->isTokenInBlackList($jwt)) return null;
+
         $secret = $this->secret;
         // split the token
         $tokenParts = $this->getTokenParts($jwt);
@@ -94,6 +106,11 @@ class JWT
         return $this->getTokenable($jwt);
     }
 
+    /**
+     * @param Request $request
+     * @param Model $tokenable
+     * @return string
+     */
     public function createToken(Request $request, Model $tokenable): string
     {
         $secret = $this->secret;
@@ -127,12 +144,20 @@ class JWT
         return $base64UrlHeader . "." . $base64UrlPayload . "." . $base64UrlSignature;
     }
 
+    /**
+     * @param string $jwt
+     * @return mixed|null
+     */
     private function getTokenPayLoadInfo(string $jwt)
     {
         $parts = $this->getTokenParts($jwt);
         return isset($parts['payload']) ? json_decode($parts['payload']) : null;
     }
 
+    /**
+     * @param string $jwt
+     * @return array
+     */
     private function getTokenParts(string $jwt): array
     {
         // split the token
@@ -150,6 +175,10 @@ class JWT
         ];
     }
 
+    /**
+     * @param string $jwt
+     * @return mixed
+     */
     private function getTokenable(string $jwt)
     {
         $payload = $this->getTokenPayLoadInfo($jwt);
@@ -163,14 +192,6 @@ class JWT
     public function addTokenToBlackList(string $jwt)
     {
         $data = $this->getTokenPayLoadInfo($jwt);
-        $path = storage_path() . '/jwt/blacklist';
-        //create path if not exists
-        if (!file_exists($path)) {
-            mkdir($path, 0755, true);
-        }
-
-        $this->removeExpiredTokenFromBlackList($path);
-
 
         //if token already expired don't need to add it to black list
         if ($data->exp <= time()) {
@@ -178,7 +199,7 @@ class JWT
         }
 
         //add random string for create unique file if two person generate jwt at the same time
-        $file = $path . '/' . $data->exp . '-' . Str::random(4);
+        $file = $this->blacklist_path . '/' . $data->exp . '-' . Str::random(4);
 
         if (!file_exists($file)) {
             touch($file);
@@ -186,21 +207,47 @@ class JWT
         }
     }
 
+    /**
+     * @param Request $request
+     * @return mixed|string
+     */
+    private function getTokenFromRequest(Request $request)
+    {
+        $token = $request->bearerToken() ?? '';
+
+        $map = [
+            'token',
+            'api_token'
+        ];
+        if (empty($token)) {
+            foreach ($map as $m) {
+                $token = $request->input($m);
+                if (!empty($token)) break;
+            }
+        }
+        return $token;
+    }
 
     /**
-     * @param string $path
-     * @return void
+     * @param $token
+     * @return bool
      */
-    private function removeExpiredTokenFromBlackList(string $path)
+    private function isTokenInBlackList($token)
     {
-        //remove expired tokens
-        $oldFiles = $files = array_diff(scandir($path), array('.', '..'));
+        $path = $this->blacklist_path;
+        $oldFiles = array_diff(scandir($path), array('.', '..'));
         foreach ($oldFiles as $oldFile) {
             $parts = explode('-', $oldFile);
             $timestamp = $parts[0] ?? 0;
             if ($timestamp <= time()) {
                 unlink($path . '/' . $oldFile);
+                continue;
+            }
+            $content = file_get_contents($path . '/' . $oldFile);
+            if ($content == $token) {
+                return true;
             }
         }
+        return false;
     }
 }
