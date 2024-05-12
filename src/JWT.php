@@ -20,7 +20,7 @@ class JWT
      */
     private function __construct()
     {
-        $this->expiration = config('jwt.expiration') * 60;//change minutes to seconds
+        $this->expiration = (config('jwt.expiration') ?? 0) * 60; //change minutes to seconds
         $this->secret = config('jwt.secret');
 
         $this->blacklist_path = config('jwt.blacklist_path');
@@ -88,9 +88,10 @@ class JWT
         $signature = hash_hmac('sha256', $base64UrlHeader . "." . $base64UrlPayload, $secret, true);
         $base64UrlSignature = $this->base64UrlEncode($signature);
 
+
         // check the expiration time - note this will cause an error if there is no 'exp' claim in the token
         $payLoadObj = json_decode($payload);
-        if (!empty($payLoadObj->exp)) {
+        if (!empty($payLoadObj->exp) and $payLoadObj->exp != 0) {
             $expiration = Carbon::createFromTimestamp($payLoadObj->exp);
             $tokenExpired = (Carbon::now()->diffInSeconds($expiration, false) < 0);
             if ($tokenExpired) {
@@ -104,6 +105,10 @@ class JWT
         }
         //check user agent
         if ($payLoadObj->agent != $request->server('HTTP_USER_AGENT')) {
+            return null;
+        }
+        //check user ip
+        if ($payLoadObj->ip != $request->ip()) {
             return null;
         }
 
@@ -129,7 +134,9 @@ class JWT
             'tokenable_id' => $tokenable->id,
             'tokenable_type' => get_class($tokenable),
             'agent' => $request->server('HTTP_USER_AGENT'),
-            'exp' => time() + $this->expiration
+            'ip' => $request->ip(),
+            'created_at' => time(),
+            'exp' => $this->expiration ? time() + $this->expiration : 0
         ]);
 
         // Encode Header
