@@ -104,11 +104,11 @@ class JWT
             return null;
         }
         //check user agent
-        if ($payLoadObj->agent != $request->server('HTTP_USER_AGENT')) {
+        if ((config('jwt.check_agent') ?? false) and $payLoadObj->agent != $request->server('HTTP_USER_AGENT')) {
             return null;
         }
         //check user ip
-        if ($payLoadObj->ip != $request->ip()) {
+        if ((config('jwt.check_ip') ?? false) and $payLoadObj->ip != $request->ip()) {
             return null;
         }
 
