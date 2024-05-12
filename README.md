@@ -1,6 +1,9 @@
 # Laravel JWT Auth Package
 this package add a new driver for authorization api based on JWT 
 ### how can use it?
+```
+composer require zhitoo/jwt
+```
 ### after install this package:
 ``` 
     php artisan vendor:publish Zhitoo\Jwt\JWTServiceProvider
