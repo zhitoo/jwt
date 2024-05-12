@@ -8,7 +8,7 @@ this package add a new driver for authorization api based on JWT
  ```
 go to User model
 ```
-use Hshafiei374\Jwt\HasApiTokens;
+use Zhitoo\Jwt\HasApiTokens;
 .
 .
 .

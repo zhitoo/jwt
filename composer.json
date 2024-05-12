@@ -2,6 +2,12 @@
     "name": "zhitoo/jwt",
     "description": "Laravel jwt package",
     "license": "MIT",
+    "keywords": [
+        "jwt",
+        "jwt-auth",
+        "laravel",
+        "laravel-auth"
+    ],
     "autoload": {
         "psr-4": {
             "Zhitoo\\Jwt\\": "src/"
@@ -13,15 +19,16 @@
             "email": "zhitoooo@gmail.com"
         }
     ],
+    "minimum-stability": "dev",
     "require": {
         "php": "^7.2|^7.4|^8.0",
         "ext-json": "*",
-        "illuminate/database": "^6.9|^7.0|^8.0|^9.0",
-        "illuminate/support": "^6.9|^7.0|^8.0|^9.0",
-        "illuminate/http": "^6.9|^7.0|^8.0|^9.0",
-        "illuminate/log": "^6.9|^7.0|^8.0|^9.0",
-        "illuminate/auth": "^6.9|^7.0|^8.0|^9.0",
-        "illuminate/console": "^6.9|^7.0|^8.0|^9.0",
+        "illuminate/database": "^6.9|^7.0|^8.0|^9.0|^10.0|^11.0",
+        "illuminate/support": "^6.9|^7.0|^8.0|^9.0|^10.0|^11.0",
+        "illuminate/http": "^6.9|^7.0|^8.0|^9.0|^10.0|^11.0",
+        "illuminate/log": "^6.9|^7.0|^8.0|^9.0|^10.0|^11.0",
+        "illuminate/auth": "^6.9|^7.0|^8.0|^9.0|^10.0|^11.0",
+        "illuminate/console": "^6.9|^7.0|^8.0|^9.0|^10.0|^11.0",
         "nesbot/carbon": "^2.53.1"
     },
     "extra": {
