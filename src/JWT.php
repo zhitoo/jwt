@@ -205,7 +205,7 @@ class JWT
         $data = $this->getTokenPayLoadInfo($jwt);
 
         //if token already expired don't need to add it to black list
-        if ($data->exp <= time()) {
+        if ($data->exp and $data->exp <= time()) {
             return;
         }
 
@@ -250,7 +250,7 @@ class JWT
         foreach ($oldFiles as $oldFile) {
             $parts = explode('-', $oldFile);
             $timestamp = $parts[0] ?? 0;
-            if ($timestamp <= time()) {
+            if ($timestamp and $timestamp <= time()) {
                 unlink($path . '/' . $oldFile);
                 continue;
             }
