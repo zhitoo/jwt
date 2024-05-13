@@ -47,5 +47,3 @@ Route::middleware('auth:jwt')->post('/logout', function () {
 
 });
 ```
-### you can edit config in config/jwt.php file
-### after install please go to config/jwt.php file and change secret key
